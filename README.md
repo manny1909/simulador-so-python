@@ -1,0 +1,1 @@
+# Simulador de sistema operativo desarrollado en python y angular, orientado a entender el funcionamiento de los procesos (estados, memoria)
