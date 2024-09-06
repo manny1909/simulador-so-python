@@ -1,0 +1,2 @@
+def getTest():
+    return True

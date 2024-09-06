@@ -1,0 +1,24 @@
+<form [formGroup]="formCreate" (ngSubmit)="onSubmit()">
+<h2 mat-dialog-title>Crear proceso</h2>
+<mat-dialog-content>
+    <mat-form-field>
+      <mat-label>Nombre de Proceso</mat-label>
+      <input matInput formControlName="processName">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Tamaño de Proceso</mat-label>
+      <input matInput type="number" min="1" formControlName="processSize">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Tipo de Recurso</mat-label>
+      <mat-select formControlName="processResource">
+        <mat-option *ngFor="let type of resourcesList" [value]="type">{{ type }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button (submit)="formCreate">Guardar</button>
+    <button mat-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>
+</form>
+
