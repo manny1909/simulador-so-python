@@ -1,10 +1,8 @@
 import { Component, inject, OnInit, signal, } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogModule, MatDialogTitle } from '@angular/material/dialog';
+import { MatDialogModule,  } from '@angular/material/dialog';
 import { ProcessForm, ProcessResource } from '../../models/interfaces/proceso';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatOption, MatOptionModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
@@ -49,18 +47,15 @@ export class CrearProcesoFormComponent implements OnInit {
       console.warn('form invalid');
       return
     }
-    const newProcess: ProcessForm =  this.formCreate.value
+    const _processForm: ProcessForm =  this.formCreate.value
+    const {processName, processResource, processSize} = _processForm
+    const newProcess: Proceso = new Proceso(processName, processSize, processResource)
     if (!newProcess) {
       console.error('newProcess is undefined')
     }
-    this.proceso.update(() => {
-      return newProcess
-    })
-    this._procesoService.procesos.update((value) => [...value, newProcess])
+    this._procesoService.addProcesoToList(newProcess, this._procesoService.procesosNuevos)
   }
   ngOnInit(): void {
-    this.proceso.update(() => this.formCreate.value)
-    console.log(this.proceso())
   }
 
 }

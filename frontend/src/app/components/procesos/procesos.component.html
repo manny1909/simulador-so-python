@@ -1,12 +1,5 @@
 <button mat-button (click)="openDialog()"> Crear proceso</button>
 
-<ul>
-  @for (item of procesos(); track item.id) {
-    <li>{{ item.processName }}</li>
-  }
-  @empty {
-    <li>No hay procesos disponibles.</li>
-  }
-</ul>
+<app-tabla-procesos [procesos]="procesos"></app-tabla-procesos>
 
 

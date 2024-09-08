@@ -1,0 +1,30 @@
+
+<div>
+  <div class="card p-3">
+    <h3 class="text-center card-header"> <strong>Procesos Nuevos</strong></h3>
+    <app-tabla-procesos [procesos]="procesosNuevos"></app-tabla-procesos>
+  </div>
+
+  <div class="card p-3">
+    <h3 class="text-center card-header"> <strong>Procesos Listos</strong></h3>
+    <app-tabla-procesos [procesos]="procesosListos"></app-tabla-procesos>
+  </div>
+
+  <div class="card p-3">
+    <h3 class="text-center card-header"> <strong>Procesos Ejecutando</strong></h3>
+    <app-tabla-procesos [procesos]="procesosEjecutando"></app-tabla-procesos>
+  </div>
+
+  <div class="card p-3">
+    <h3 class="text-center card-header"> <strong>Procesos Bloqueados</strong></h3>
+    <app-tabla-procesos [procesos]="procesosBloqueados"></app-tabla-procesos>
+  </div>
+
+  <div class="card p-3">
+    <h3 class="text-center card-header"> <strong>Procesos Terminados</strong></h3>
+    <app-tabla-procesos [procesos]="procesosTerminados"></app-tabla-procesos>
+  </div>
+
+</div>
+
+
