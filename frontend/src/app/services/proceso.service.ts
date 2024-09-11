@@ -4,6 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
 import { RecursoService } from './recurso.service';
 import { randomInt } from '../util/iutil';
+import { MemoriaService } from './memoria.service';
+import { ProcesadorService } from './procesador.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,8 @@ import { randomInt } from '../util/iutil';
 export class ProcesoService {
   readonly _snackBar = inject(MatSnackBar)
   readonly _recursoService = inject(RecursoService)
+  readonly _memoriaService = inject(MemoriaService)
+  readonly _procesadorService = inject(ProcesadorService)
   // procesosNuevos = signal<Proceso[]>(new Array())
   // procesosListos = signal<Proceso[]>(new Array())
   // procesosEjecutando = signal<Proceso[]>(new Array())
@@ -91,14 +95,21 @@ export class ProcesoService {
   }
   actualizarProcesos() {
     console.log('entre a actualizarProcesos')
+    const procesosNuevos = this.procesosNuevos
+    const procesosListos = this.procesosListos
+    const procesosEjecutando = this.procesosEjecutando
+    const procesosBloqueados = this.procesosBloqueados
+    const procesosTerminados = this.procesosTerminados
+    const recursos = this._recursoService.recursos
     //terminados
-    this.actualizarTerminados()
+    // this.actualizarTerminados()
+    this.actualizarRecursos()
     //ejecución
     this.actualizarEjecucion()
-    //listos
-    this.actualizarListos()
-    //bloqueado y nuevo
-    this.actualizarBloqueadoYNuevo()
+    // //listos
+    // this.actualizarListos()
+    // //bloqueado y nuevo
+    // this.actualizarBloqueadoYNuevo()
   }
   actualizarTerminados() {
     this.procesosTerminados.update(value => {
@@ -106,37 +117,88 @@ export class ProcesoService {
       return [...value]
     })
   }
-  actualizarEjecucion() {
+  actualizarRecursos() {
     const procesosEjecutando = this.procesosEjecutando()
-    let recursos = this._recursoService.recursos
-    this._recursoService.recursos = recursos
-    if (procesosEjecutando.length < 1) {
-      return
-    }
-    const proceso = procesosEjecutando[0]
-    const flag = proceso.ejecutar(10)
-    if (flag && proceso.estado!='terminado') {
-      const i = recursos.findIndex(x => !x.ocupado && x.recurso == proceso.processResource)
-      if (i == -1) {
-        proceso.setEstado('bloqueado')
-        const indexRecurso = recursos.findIndex(x => x.recurso == proceso.processResource)
-        recursos[indexRecurso].idProceso = undefined
-        recursos[indexRecurso].ocupado = false
-        this.procesosBloqueados.update(value => [...value, proceso])
-        this.procesosEjecutando.update(value => this.eliminarDeArray(value, 0, 1))
+    const procesosListos = this.procesosListos()
+    const procesosBloqueados = this.procesosBloqueados()
+    const recursos = this._recursoService.recursos
+
+    recursos.forEach((recurso, index) => {
+      const indexProceso = procesosEjecutando.findIndex(x => x.processResource == recurso.recurso)
+      if (indexProceso == -1) {
+        recurso.ocupado = false
+        recurso.idProceso = undefined
       }
       else {
-        proceso.setEstado('listo')
-        recursos[i].idProceso = proceso.id
-        recursos[i].ocupado = true
-        this.procesosListos.update(value => [...value, proceso])
-        this.procesosEjecutando.update(value => this.eliminarDeArray(value, 0, 1))
+        recurso.idProceso = procesosEjecutando[indexProceso].id
+        recurso.ocupado = true
       }
-    }
-    else {
-      this.procesosTerminados.update(value => [...value, proceso])
-      this.procesosEjecutando.update(value => this.eliminarDeArray(value, 0, 1))
-    }
+    })
+
+    const idProcesos = recursos.map(x => x.idProceso)
+    procesosEjecutando.forEach((proceso, index) => {
+      if (!idProcesos.includes(proceso.id)) {
+        if (!this._memoriaService.verificarMemoriaLlena()) {
+          proceso.setEstado('listo')
+          //función asignar espacio en memoria
+          procesosEjecutando.splice(index, 0)
+          procesosListos.push(proceso)
+        }
+        else {
+          proceso.setEstado('bloqueado')
+          //función asignar espacio en memoria
+          procesosEjecutando.splice(index, 0)
+          procesosBloqueados.push(proceso)
+        }
+      }
+    })
+    this.procesosBloqueados.update(x => [...procesosBloqueados])
+    this.procesosListos.update(x => [...procesosListos])
+    this.procesosEjecutando.update(x => [...procesosEjecutando])
+    this._recursoService.recursos = recursos
+  }
+  actualizarEjecucion() {
+    const procesosEjecutando = this.procesosEjecutando()
+    const procesosListos = this.procesosListos()
+    const procesosBloqueados = this.procesosBloqueados()
+    const procesosTerminados = this.procesosTerminados()
+    let recursos = this._recursoService.recursos
+    procesosEjecutando.forEach((proceso, index) => {
+      this._procesadorService.ejecutar(proceso)
+      if (proceso.estado != 'terminado') {
+        console.log(this._memoriaService.verificarMemoriaLlena())
+        if (!this._memoriaService.verificarMemoriaLlena()) {
+          try {
+            this._memoriaService.cargarProcesoEnMemoria(proceso)
+            proceso.setEstado('listo')
+            procesosListos.push(proceso)
+            procesosEjecutando.splice(0, 1)
+          } catch (error) {
+            console.info('No se pudo cargar el proceso en memoria')
+            procesosEjecutando.splice(0, 1)
+            procesosBloqueados.push(proceso)
+          }
+        }
+        else {
+          proceso.setEstado('bloqueado')
+          procesosEjecutando.splice(index, 0)
+          procesosBloqueados.push(proceso)
+        }
+        const indexRecurso = recursos.findIndex(x => x.recurso == proceso.processResource)
+        if (indexRecurso != -1) {
+          recursos[indexRecurso] = { ...recursos[indexRecurso], idProceso: undefined, ocupado: false }
+        }
+      }
+      else {
+        procesosTerminados.push(proceso)
+        procesosEjecutando.splice(index, 1)
+      }
+    })
+    this.procesosTerminados.update(x => [...procesosTerminados])
+    this.procesosBloqueados.update(x => [...procesosBloqueados])
+    this.procesosListos.update(x => [...procesosListos])
+    this.procesosEjecutando.update(x => [...procesosEjecutando])
+    this._recursoService.recursos = recursos
   }
   eliminarDeArray(arr: Array<Proceso>, start: number, deleteCount?: number): Array<Proceso> {
     deleteCount ? arr.splice(start, deleteCount) : arr.splice(start)
@@ -144,46 +206,60 @@ export class ProcesoService {
   }
   actualizarListos() {
     const procesosListos = this.procesosListos()
-    if (procesosListos.length < 1) {
-      return
-    }
-    const proceso = procesosListos[0]
-    proceso.setEstado('ejecutando')
-    this.procesosEjecutando.update(value => [...value, proceso])
-    this.procesosListos.update(value => this.eliminarDeArray(value, 0, 1))
+    const procesosEjecutando = this.procesosEjecutando()
+    const recursos = this._recursoService.recursos.filter(x => !x.ocupado)
+    recursos.forEach(recurso => {
+      const indexProceso = procesosListos.findIndex(x => x.processResource == recurso.recurso)
+      if (indexProceso != -1) {
+        const proceso = procesosListos[indexProceso]
+        proceso.setEstado('ejecutando')
+        recurso.ocupado = true
+        recurso.idProceso = proceso.id
+        procesosEjecutando.push(proceso)
+        procesosListos.splice(indexProceso, 1)
+      }
+    })
+    this.procesosListos.update(value => [...procesosListos])
+    this.procesosEjecutando.update(value => [...procesosEjecutando])
   }
   actualizarBloqueadoYNuevo() {
-    let procesosNuevos = this.procesosNuevos()
-    let procesosBloqueados = this.procesosBloqueados()
-    let recursos = this._recursoService.recursos
-    while (this._recursoService.recursosDisponibles() && (procesosNuevos.length > 0 || procesosBloqueados.length > 0)) {
-      let proceso: Proceso
-      if (procesosBloqueados.length > 0) {
-        proceso = procesosBloqueados[0]
-        const indexRecurso = recursos.findIndex(x => !x.ocupado && x.recurso == proceso.processResource)
-        if (indexRecurso != -1) {
-          recursos[indexRecurso].idProceso = proceso.id
-          recursos[indexRecurso].ocupado = true
-          this._recursoService.recursos = recursos
-          proceso.setEstado('listo')
-          this.procesosListos.update(value => [...value, proceso])
-          this.procesosBloqueados.update(value => this.eliminarDeArray(value, 0, 1))
-        }
-        procesosBloqueados.splice(0,1)
-      }
-      if (procesosNuevos.length > 0) {
-        proceso = procesosNuevos[0]
-        const indexRecurso = recursos.findIndex(x => !x.ocupado && x.recurso == proceso.processResource)
-        if (indexRecurso != -1) {
-          recursos[indexRecurso].idProceso = proceso.id
-          recursos[indexRecurso].ocupado = true
-          this._recursoService.recursos = recursos
-          proceso.setEstado('listo')
-          this.procesosListos.update(value => [...value, proceso])
-          this.procesosNuevos.update(value => this.eliminarDeArray(value, 0, 1))
-        }
-        procesosNuevos.splice(0,1)
+    const procesosNuevos = this.procesosNuevos();
+    const procesosBloqueados = this.procesosBloqueados();
+    const procesosListos = this.procesosListos();
+    const rand = Math.random().valueOf()
+    let cont = 0
+    const updateList = (lista: Array<Proceso>) => {
+      if (lista.length < 0) return;
+      const proceso = lista[0]
+      try {
+        this._memoriaService.cargarProcesoEnMemoria(proceso)
+        proceso.setEstado('listo')
+        //función de asignar espacio en memoria
+        procesosListos.push(proceso)
+        lista.splice(0, 1)
+      } catch (error) {
+        console.info('No se pudo cargar el proceso en memoria')
+        lista.splice(0, 1)
+        lista.push(proceso)
       }
     }
+    while (!this._memoriaService.verificarMemoriaLlena() || cont > 1000) {
+      if (rand == 1) {
+        updateList(procesosBloqueados)
+      }
+      else if (rand == 0) {
+        updateList(procesosNuevos)
+      }
+      else {
+        console.error('random no es ni 1 ni 0')
+      }
+      cont++
+    }
+
+    // Actualizamos los signals
+    this.procesosNuevos.update(value => [...procesosNuevos]);
+    this.procesosBloqueados.update(value => [...procesosBloqueados]);
+    this.procesosListos.update(value => [...procesosListos]);
   }
+
 }

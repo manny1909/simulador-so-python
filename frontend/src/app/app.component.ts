@@ -21,20 +21,14 @@ export class AppComponent implements OnInit{
 
   }
   ngOnInit(): void {
-    this.idIntervaloSimProcesos = this.startProcessesSimulation()
+    // this.idIntervaloSimProcesos = this.startProcessesSimulation()
+    this._procesoService.actualizarProcesos()
   }
   startProcessesSimulation(): number{
-    this.recursos.forEach((recurso) => {
-      const proceso = this._procesoService.procesosEjecutando().find(x=> x.processResource == recurso.recurso)
-      if (proceso) {
-        recurso.idProceso = proceso.id
-        recurso.ocupado = true
-      }
-     })
     return setInterval(() => {
       this._procesoService.actualizarProcesos()
       // console.log('hola')
-    }, 500);
+    }, 1000);
   }
   stopProcessSimulation(){
 

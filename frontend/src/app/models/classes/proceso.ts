@@ -6,29 +6,56 @@ export class Proceso {
   processSize: number | 0
   processResource: ProcessResource | undefined
   estado: ProcessStatus
-  contadorPrograma: number
+  pendingSize: number
+  contadorProceso: number | undefined
   constructor(processName: string, processSize: number, processResource: ProcessResource, estado?: ProcessStatus, id?: number) {
     this.id = id
     this.processName = processName
     this.processSize = processSize
     this.processResource = processResource
     this.estado = estado ?? 'nuevo'
-    this.contadorPrograma = 0
+    this.pendingSize = processSize
   }
 
   setEstado(estado: ProcessStatus) {
     this.estado = estado
   }
-  ejecutar(processedSize: number) {
-    this.contadorPrograma = processedSize + this.contadorPrograma > this.processSize ? this.processSize : processedSize + this.contadorPrograma
-    if (this.contadorPrograma == this.processSize) {
-      this.estado = 'terminado'
-      return false
+  generarChunks(sizeChunk: number): ProcessChunk[] {
+    if (sizeChunk <= 0) {
+      throw new Error("El tamaño del chunk debe ser mayor a 0")
     }
-    return true
-    // setTimeout(() => {
-    //   console.log('Proceso', this.processName, 'tuvo pasó por el procesador')
-    //   this.contadorPrograma == 100 && console.info('Proceso', this.processName, 'se ejecuto correctamente')
-    // }, processedSize);
+
+    const chunks: ProcessChunk[] = []
+    const totalChunks = Math.ceil(this.pendingSize / sizeChunk)
+    let idChunk = this.contadorProceso ?? 0
+    for (let i = 0; i < totalChunks; i++) {
+      const chunkSize = (i + 1) * sizeChunk > this.pendingSize
+        ? this.pendingSize - i * sizeChunk
+        : sizeChunk
+
+      const chunk = new ProcessChunk(this.id || 0, chunkSize, idChunk)
+      chunks.push(chunk)
+      idChunk++
+    }
+
+    return chunks
+  }
+  reconstruirProceso(chunks: ProcessChunk[]): void {
+    const processSize = chunks.reduce((total, chunk) => total + chunk.chunkSize, 0)
+    this.id = chunks[0].idProceso
+    this.processSize = processSize
+    this.pendingSize = 0
+  }
+}
+
+export class ProcessChunk {
+  idProceso: number
+  chunkSize: number
+  chunkIndex: number
+
+  constructor(idProceso: number, chunkSize: number, chunkIndex: number) {
+    this.idProceso = idProceso
+    this.chunkSize = chunkSize
+    this.chunkIndex = chunkIndex
   }
 }
