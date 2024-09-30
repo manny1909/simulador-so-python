@@ -24,31 +24,31 @@ export class ProcesoService {
     new Proceso('Proceso A', 100, 'memory', 'nuevo', 1),
     new Proceso('Proceso B', 150, 'processor', 'nuevo', 2),
     new Proceso('Proceso C', 200, 'graphicsCard', 'nuevo', 3),
-    new Proceso('Proceso D', 300, 'hardDrive', 'nuevo', 4)
+    new Proceso('Proceso D', 300, 'processor', 'nuevo', 4)
   ]);
 
   procesosListos = signal<Proceso[]>([
-    new Proceso('Proceso E', 120, 'memory', 'listo', 5),
-    new Proceso('Proceso F', 180, 'processor', 'listo', 6),
-    new Proceso('Proceso G', 250, 'graphicsCard', 'listo', 7)
+    // new Proceso('Proceso E', 120, 'memory', 'listo', 5),
+    // new Proceso('Proceso F', 180, 'processor', 'listo', 6),
+    // new Proceso('Proceso G', 250, 'graphicsCard', 'listo', 7)
   ]);
 
   procesosEjecutando = signal<Proceso[]>([
-    new Proceso('Proceso H', 130, 'memory', 'ejecutando', 8),
-    new Proceso('Proceso I', 170, 'processor', 'ejecutando', 9),
-    new Proceso('Proceso J', 220, 'graphicsCard', 'ejecutando', 10)
+    // new Proceso('Proceso H', 130, 'memory', 'ejecutando', 8),
+    // new Proceso('Proceso I', 170, 'processor', 'ejecutando', 9),
+    // new Proceso('Proceso J', 220, 'graphicsCard', 'ejecutando', 10)
   ]);
 
   procesosBloqueados = signal<Proceso[]>([
-    new Proceso('Proceso K', 140, 'memory', 'bloqueado', 11),
-    new Proceso('Proceso L', 160, 'processor', 'bloqueado', 12),
-    new Proceso('Proceso M', 270, 'graphicsCard', 'bloqueado', 13)
+    // new Proceso('Proceso K', 140, 'memory', 'bloqueado', 11),
+    // new Proceso('Proceso L', 160, 'processor', 'bloqueado', 12),
+    // new Proceso('Proceso M', 270, 'graphicsCard', 'bloqueado', 13)
   ]);
 
   procesosTerminados = signal<Proceso[]>([
-    new Proceso('Proceso N', 110, 'memory', 'terminado', 14),
-    new Proceso('Proceso O', 190, 'processor', 'terminado', 15),
-    new Proceso('Proceso P', 230, 'graphicsCard', 'terminado', 16)
+    // new Proceso('Proceso N', 110, 'memory', 'terminado', 14),
+    // new Proceso('Proceso O', 190, 'processor', 'terminado', 15),
+    // new Proceso('Proceso P', 230, 'graphicsCard', 'terminado', 16)
   ]);
   todosLosProcesos = computed(() => [
     ...this.procesosNuevos(),
@@ -93,6 +93,9 @@ export class ProcesoService {
       return value
     })
   }
+  getRandomBoolean(): boolean {
+    return Math.random() >= 0.5;
+  }
   actualizarProcesos() {
     console.log('entre a actualizarProcesos')
     const procesosNuevos = this.procesosNuevos
@@ -102,14 +105,14 @@ export class ProcesoService {
     const procesosTerminados = this.procesosTerminados
     const recursos = this._recursoService.recursos
     //terminados
-    // this.actualizarTerminados()
+    this.actualizarTerminados()
     this.actualizarRecursos()
     //ejecución
     this.actualizarEjecucion()
     // //listos
-    // this.actualizarListos()
+    this.actualizarListos()
     // //bloqueado y nuevo
-    // this.actualizarBloqueadoYNuevo()
+    this.actualizarBloqueadoYNuevo()
   }
   actualizarTerminados() {
     this.procesosTerminados.update(value => {
@@ -163,37 +166,77 @@ export class ProcesoService {
     const procesosBloqueados = this.procesosBloqueados()
     const procesosTerminados = this.procesosTerminados()
     let recursos = this._recursoService.recursos
-    procesosEjecutando.forEach((proceso, index) => {
+    if (procesosEjecutando.length > 0) {
+      const proceso = procesosEjecutando[0]
+      console.log('Ejecutando proceso', proceso.processName, '...')
       this._procesadorService.ejecutar(proceso)
-      if (proceso.estado != 'terminado') {
-        console.log(this._memoriaService.verificarMemoriaLlena())
-        if (!this._memoriaService.verificarMemoriaLlena()) {
-          try {
-            this._memoriaService.cargarProcesoEnMemoria(proceso)
-            proceso.setEstado('listo')
-            procesosListos.push(proceso)
-            procesosEjecutando.splice(0, 1)
-          } catch (error) {
-            console.info('No se pudo cargar el proceso en memoria')
+      recursos.forEach(item => {
+        if (item.recurso == proceso.processResource){
+          
+          if (item.ocupado && item.idProceso!==undefined) {
+            item.idProceso = proceso.id
+            item.ocupado = true
+          }
+          if (item.ocupado && item.idProceso!= proceso.id) {
+            proceso.setEstado('bloqueado')
             procesosEjecutando.splice(0, 1)
             procesosBloqueados.push(proceso)
           }
+          else{
+            item.ocupado = true
+          }
         }
-        else {
-          proceso.setEstado('bloqueado')
-          procesosEjecutando.splice(index, 0)
-          procesosBloqueados.push(proceso)
-        }
-        const indexRecurso = recursos.findIndex(x => x.recurso == proceso.processResource)
-        if (indexRecurso != -1) {
-          recursos[indexRecurso] = { ...recursos[indexRecurso], idProceso: undefined, ocupado: false }
-        }
+      })
+      if (proceso.estado != 'terminado') {
+        proceso.setEstado('listo')
+        recursos.forEach(item => {
+          const liberaRecurso = this.getRandomBoolean()
+          console.log('libera el recurso:',liberaRecurso)
+          const flag = proceso.processResource == item.recurso
+          if (flag && liberaRecurso) {
+            item.idProceso = undefined
+            item.ocupado = false
+          }
+        })
+        procesosListos.push(proceso)
+        procesosEjecutando.splice(0, 1)
       }
       else {
         procesosTerminados.push(proceso)
-        procesosEjecutando.splice(index, 1)
+        procesosEjecutando.splice(0, 1)
       }
-    })
+    }
+    // procesosEjecutando.forEach((proceso, index) => {
+    //   this._procesadorService.ejecutar(proceso)
+    //   if (proceso.estado != 'terminado') {
+    //     console.log(this._memoriaService.verificarMemoriaLlena())
+    //     if (!this._memoriaService.verificarMemoriaLlena()) {
+    //       try {
+    //         this._memoriaService.cargarProcesoEnMemoria(proceso)
+    //         proceso.setEstado('listo')
+    //         procesosListos.push(proceso)
+    //         procesosEjecutando.splice(0, 1)
+    //       } catch (error) {
+    //         console.info('No se pudo cargar el proceso en memoria')
+    //         procesosEjecutando.splice(0, 1)
+    //         procesosBloqueados.push(proceso)
+    //       }
+    //     }
+    //     else {
+    //       proceso.setEstado('bloqueado')
+    //       procesosEjecutando.splice(index, 0)
+    //       procesosBloqueados.push(proceso)
+    //     }
+    //     const indexRecurso = recursos.findIndex(x => x.recurso == proceso.processResource)
+    //     if (indexRecurso != -1) {
+    //       recursos[indexRecurso] = { ...recursos[indexRecurso], idProceso: undefined, ocupado: false }
+    //     }
+    //   }
+    //   else {
+    //     procesosTerminados.push(proceso)
+    //     procesosEjecutando.splice(index, 1)
+    //   }
+    // })
     this.procesosTerminados.update(x => [...procesosTerminados])
     this.procesosBloqueados.update(x => [...procesosBloqueados])
     this.procesosListos.update(x => [...procesosListos])
@@ -207,18 +250,24 @@ export class ProcesoService {
   actualizarListos() {
     const procesosListos = this.procesosListos()
     const procesosEjecutando = this.procesosEjecutando()
-    const recursos = this._recursoService.recursos.filter(x => !x.ocupado)
-    recursos.forEach(recurso => {
-      const indexProceso = procesosListos.findIndex(x => x.processResource == recurso.recurso)
-      if (indexProceso != -1) {
-        const proceso = procesosListos[indexProceso]
-        proceso.setEstado('ejecutando')
-        recurso.ocupado = true
-        recurso.idProceso = proceso.id
-        procesosEjecutando.push(proceso)
-        procesosListos.splice(indexProceso, 1)
-      }
-    })
+    if (procesosListos.length>0) {
+      const proceso = procesosListos[0]
+      proceso.setEstado('ejecutando')
+      procesosEjecutando.push(proceso)
+      procesosListos.splice(0, 1)
+    }
+    // const recursos = this._recursoService.recursos.filter(x => !x.ocupado)
+    // recursos.forEach(recurso => {
+    //   const indexProceso = procesosListos.findIndex(x => x.processResource == recurso.recurso)
+    //   if (indexProceso != -1) {
+    //     const proceso = procesosListos[indexProceso]
+    //     proceso.setEstado('ejecutando')
+    //     recurso.ocupado = true
+    //     recurso.idProceso = proceso.id
+    //     procesosEjecutando.push(proceso)
+    //     procesosListos.splice(indexProceso, 1)
+    //   }
+    // })
     this.procesosListos.update(value => [...procesosListos])
     this.procesosEjecutando.update(value => [...procesosEjecutando])
   }
@@ -226,35 +275,53 @@ export class ProcesoService {
     const procesosNuevos = this.procesosNuevos();
     const procesosBloqueados = this.procesosBloqueados();
     const procesosListos = this.procesosListos();
-    const rand = Math.random().valueOf()
-    let cont = 0
-    const updateList = (lista: Array<Proceso>) => {
-      if (lista.length < 0) return;
-      const proceso = lista[0]
-      try {
-        this._memoriaService.cargarProcesoEnMemoria(proceso)
+    const flag = this.getRandomBoolean()
+    if (flag) {
+      const proceso = procesosBloqueados[0]
+      if (proceso) {
         proceso.setEstado('listo')
-        //función de asignar espacio en memoria
+        procesosBloqueados.splice(0,1)
         procesosListos.push(proceso)
-        lista.splice(0, 1)
-      } catch (error) {
-        console.info('No se pudo cargar el proceso en memoria')
-        lista.splice(0, 1)
-        lista.push(proceso)
       }
     }
-    while (!this._memoriaService.verificarMemoriaLlena() || cont > 1000) {
-      if (rand == 1) {
-        updateList(procesosBloqueados)
+    else {
+      const proceso = procesosNuevos[0]
+      if (proceso) {
+        proceso.setEstado('listo')
+        procesosNuevos.splice(0,1)
+        procesosListos.push(proceso)
       }
-      else if (rand == 0) {
-        updateList(procesosNuevos)
-      }
-      else {
-        console.error('random no es ni 1 ni 0')
-      }
-      cont++
+      
     }
+    // const rand = Math.random().valueOf()
+    // let cont = 0
+    // const updateList = (lista: Array<Proceso>) => {
+    //   if (lista.length < 0) return;
+    //   const proceso = lista[0]
+    //   try {
+    //     this._memoriaService.cargarProcesoEnMemoria(proceso)
+    //     proceso.setEstado('listo')
+    //     //función de asignar espacio en memoria
+    //     procesosListos.push(proceso)
+    //     lista.splice(0, 1)
+    //   } catch (error) {
+    //     console.info('No se pudo cargar el proceso en memoria')
+    //     lista.splice(0, 1)
+    //     lista.push(proceso)
+    //   }
+    // }
+    // while (!this._memoriaService.verificarMemoriaLlena() || cont > 1000) {
+    //   if (rand == 1) {
+    //     updateList(procesosBloqueados)
+    //   }
+    //   else if (rand == 0) {
+    //     updateList(procesosNuevos)
+    //   }
+    //   else {
+    //     console.error('random no es ni 1 ni 0')
+    //   }
+    //   cont++
+    // }
 
     // Actualizamos los signals
     this.procesosNuevos.update(value => [...procesosNuevos]);

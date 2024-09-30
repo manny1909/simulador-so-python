@@ -21,8 +21,8 @@ export class AppComponent implements OnInit{
 
   }
   ngOnInit(): void {
-    // this.idIntervaloSimProcesos = this.startProcessesSimulation()
-    this._procesoService.actualizarProcesos()
+    this.idIntervaloSimProcesos = this.startProcessesSimulation()
+    // this._procesoService.actualizarProcesos()
   }
   startProcessesSimulation(): number{
     return setInterval(() => {

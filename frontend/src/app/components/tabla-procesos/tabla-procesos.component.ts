@@ -13,7 +13,7 @@ import { ProcessStatus } from '../../models/interfaces/proceso';
 export class TablaProcesosComponent implements OnInit {
  @Input('procesos') procesos!: Signal<Proceso[]>
  @Input('estado') estado: ProcessStatus | undefined
- displayedColumns: string[] = ['id', 'name', 'weight', 'resource', 'status'];
+ displayedColumns: string[] = ['id', 'name', 'weight', 'pending', 'resource', 'status'];
  dataSource = new MatTableDataSource<Proceso>();
   constructor(){
     effect(() => {

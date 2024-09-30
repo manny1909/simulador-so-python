@@ -20,6 +20,10 @@
     <th mat-header-cell *matHeaderCellDef> Tamaño </th>
     <td mat-cell *matCellDef="let element"> {{element.processSize}} </td>
   </ng-container>
+  <ng-container matColumnDef="pending">
+    <th mat-header-cell *matHeaderCellDef> T. Pendiente </th>
+    <td mat-cell *matCellDef="let element"> {{element.pendingSize}} </td>
+  </ng-container>
 
   <!-- Symbol Column -->
   <ng-container matColumnDef="resource">

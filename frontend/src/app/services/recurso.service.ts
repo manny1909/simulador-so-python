@@ -6,10 +6,10 @@ import { IResource } from '../models/interfaces/resource';
 })
 export class RecursoService {
   recursos: IResource[] = [
-    { recurso: 'memory', idProceso: undefined },
-    { recurso: 'processor', idProceso: undefined },
-    { recurso: 'hardDrive', idProceso: undefined },
-    { recurso: 'graphicsCard', idProceso: undefined },
+    { recurso: 'memory', idProceso: undefined, ocupado: false },
+    { recurso: 'processor', idProceso: undefined, ocupado: false },
+    { recurso: 'hardDrive', idProceso: undefined, ocupado: false },
+    { recurso: 'graphicsCard', idProceso: undefined, ocupado: false },
   ]
   constructor() { }
   recursosDisponibles(): boolean {
