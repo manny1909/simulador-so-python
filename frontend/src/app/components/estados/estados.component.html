@@ -1,29 +1,59 @@
 
-<div>
-  <div class="card p-3">
-    <h3 class="text-center card-header"> <strong>Procesos Nuevos</strong></h3>
+<div class="grid grid-cols-3 grid-procesos gap-4 p-2">
+  <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-nuevo">
+    <h5 class="text-center card-header"> <strong>Procesos Nuevos</strong></h5>
     <app-tabla-procesos [procesos]="procesosNuevos"></app-tabla-procesos>
   </div>
 
-  <div class="card p-3">
-    <h3 class="text-center card-header"> <strong>Procesos Listos</strong></h3>
+  <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-listo">
+    <h5 class="text-center card-header"> <strong>Procesos Listos</strong></h5>
     <app-tabla-procesos [procesos]="procesosListos"></app-tabla-procesos>
   </div>
 
-  <div class="card p-3">
-    <h3 class="text-center card-header"> <strong>Procesos Ejecutando</strong></h3>
+  <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-ejecutando">
+    <h5 class="text-center card-header"> <strong>Procesos Ejecutando</strong></h5>
     <app-tabla-procesos [procesos]="procesosEjecutando"></app-tabla-procesos>
   </div>
 
-  <div class="card p-3">
-    <h3 class="text-center card-header"> <strong>Procesos Bloqueados</strong></h3>
+  <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-bloqueado">
+    <h5 class="text-center card-header"> <strong>Procesos Bloqueados</strong></h5>
     <app-tabla-procesos [procesos]="procesosBloqueados"></app-tabla-procesos>
   </div>
-
-  <div class="card p-3">
-    <h3 class="text-center card-header"> <strong>Procesos Terminados</strong></h3>
+  <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-terminado">
+    <h5 class="text-center card-header"> <strong>Procesos Terminados</strong></h5>
     <app-tabla-procesos [procesos]="procesosTerminados"></app-tabla-procesos>
   </div>
+  <div class="card p-3 bg-green-200 h-56 overflow-auto grid-area-recursos">
+    <h5 class="text-center card-header"> <strong>Recursos</strong></h5>
+    <!-- <app-tabla-procesos [procesos]="procesosTerminados"></app-tabla-procesos> -->
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 custom-table">
+
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+
+      <!-- Position Column -->
+      <ng-container matColumnDef="recurso">
+        <th mat-header-cell *matHeaderCellDef> Recurso </th>
+        <td mat-cell *matCellDef="let element"> {{element.recurso}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="idProceso">
+        <th mat-header-cell *matHeaderCellDef> Id Proceso </th>
+        <td mat-cell *matCellDef="let element"> {{element.idProceso}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="ocupado">
+        <th mat-header-cell *matHeaderCellDef> Estado </th>
+        <td mat-cell *matCellDef="let element"> {{(element.ocupado? 'Ocupado': 'Disponible')}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
 
 </div>
 

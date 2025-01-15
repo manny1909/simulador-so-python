@@ -1,0 +1,24 @@
+.grid-container {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(20, 5%); /* Columnas dinámicas */
+  background-color: #ccc; /* Fondo para "bordes" entre celdas */
+  padding: 1%;
+  gap: 1px;
+}
+
+.grid-row {
+  display: contents; /* Mantiene el flujo de la tabla */
+}
+
+.grid-cell {
+  background-color: white; /* Fondo de cada celda */
+  border: 1px solid #ccc; /* Borde alrededor de cada celda */
+  text-align: center;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  font-size: 9px;
+  padding: 1px;
+  aspect-ratio: 1; /* Hace que la celda sea cuadrada */
+}

@@ -28,7 +28,7 @@ export class CrearProcesoFormComponent implements OnInit {
     return this._fb.group(
       {
         processName: ['Nuevo proceso', [ Validators.required]],
-        processSize: [0, [ Validators.required, Validators.min(1)]],
+        processSize: [1, [ Validators.required, Validators.min(1)]],
         processResource: [undefined, [ Validators.required]],
       },
       {}

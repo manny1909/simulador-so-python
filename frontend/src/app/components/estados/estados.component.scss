@@ -1,0 +1,32 @@
+.grid-procesos{
+  grid-template-areas: "nuevo listo ejecutando"
+  "recursos bloqueado terminado";
+}
+
+.grid-area-nuevo{
+  grid-area: nuevo;
+}
+.grid-area-listo{
+  grid-area: listo;
+}
+.grid-area-ejecutando{
+  grid-area: ejecutando;
+}
+.grid-area-bloqueado{
+  grid-area: bloqueado;
+}
+.grid-area-terminado{
+  grid-area: terminado;
+}
+.grid-area-recursos{
+  grid-area: recursos;
+}
+
+.mat-mdc-row, .mat-mdc-header-row {
+  height: min-content !important;
+}
+.mat-mdc-cell, .mat-mdc-header-cell{
+  font-size: 9px;
+  line-height: normal;
+  padding: 10px;
+}

@@ -13,5 +13,5 @@ export type ProcessStatus =
 export interface ProcessForm {
   processName: string;
   processSize: number;
-  processResource: ProcessResource;
+  processResource: ProcessResource[];
 }

@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Proceso } from '../models/classes/proceso';
 import { MemoriaService } from './memoria.service';
+import { RecursoService } from './recurso.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +9,11 @@ import { MemoriaService } from './memoria.service';
 export class ProcesadorService {
 
   private readonly _memoriaService = inject(MemoriaService)
+  private readonly _recursosService = inject(RecursoService)
   constructor() { }
 
   ejecutar(proceso: Proceso) {
+
     // const listaEspacios = this._memoriaService.memoria.flatMap((value, index, array) => {
     //   const aux = value.filter(x => x.processChunk !== undefined && x.processChunk.idProceso == proceso.id)
     //   value = aux.map(x=> ({ ...x, processChunk: undefined }))
@@ -27,6 +30,12 @@ export class ProcesadorService {
     // })
     proceso.pendingSize -= 10
     proceso.pendingSize = proceso.pendingSize < 0 ? 0 : proceso.pendingSize
-    proceso.estado = proceso.pendingSize <= 0 ? 'terminado' : proceso.estado
+    const estado = proceso.pendingSize <= 0 ? 'terminado' : 'listo'
+    proceso.setEstado(estado)
+    //
+
+  }
+  getRandomBoolean(): boolean {
+    return Math.random() >= 0.5;
   }
 }

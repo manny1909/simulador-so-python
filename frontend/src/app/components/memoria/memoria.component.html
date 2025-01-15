@@ -1,0 +1,30 @@
+<div class="grid-container">
+  @for (row of this._memoriaService.memoria; track $index) {
+    <div class="grid-row">
+      @for (celda of row; track $index) {
+        <div class="grid-cell" [style]="{'background-color': celda.color}">
+          <small>
+            {{celda.address}}
+          </small>
+          <span>
+            @if (!celda.processChunk) {
+              disponible
+            }
+            @else {
+              <div> IdProc: {{celda.processChunk.idProceso}}</div>
+              <small style="line-height: 1;">
+                <div>
+                  index: {{celda.processChunk.chunkIndex}}
+                </div>
+                <div>
+                  size: {{celda.processChunk.chunkSize}}
+                </div>
+              </small>
+            }
+          </span>
+        </div>
+      }
+    </div>
+  }
+</div>
+

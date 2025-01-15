@@ -12,7 +12,5 @@ export class RecursoService {
     { recurso: 'graphicsCard', idProceso: undefined, ocupado: false },
   ]
   constructor() { }
-  recursosDisponibles(): boolean {
-    return this.recursos.findIndex(x => !x.ocupado) != -1
-  }
+
 }

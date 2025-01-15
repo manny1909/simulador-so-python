@@ -1,0 +1,44 @@
+.custom-table .mat-column-id {
+  font-size: 9px;
+  width: 10px; /* Ajusta el ancho de la columna 'Id Proceso' */
+  padding: 0 10px;
+  line-height: normal;
+}
+
+.custom-table .mat-column-name {
+  font-size: 9px;
+  width: 20px; /* Ajusta el ancho de la columna 'Nombre' */
+  padding: 0 10px;
+  line-height: normal;
+}
+
+.custom-table .mat-column-weight {
+  font-size: 9px;
+  width: 10px; /* Ajusta el ancho de la columna 'Tamaño' */
+  padding: 0 10px;
+  line-height: normal;
+}
+
+.custom-table .mat-column-pending {
+  font-size: 9px;
+  width: 10px; /* Ajusta el ancho de la columna 'T. Pendiente' */
+  padding: 0 10px;
+  line-height: normal;
+}
+
+.custom-table .mat-column-resource {
+  font-size: 9px;
+  width: 10px; /* Ajusta el ancho de la columna 'Recurso usado' */
+  padding: 0 10px;
+  line-height: normal;
+}
+
+.custom-table .mat-column-status {
+  font-size: 9px;
+  width: 10px; /* Ajusta el ancho de la columna 'Estado' */
+  padding: 10px;
+  line-height: normal;
+}
+.mat-mdc-row, .mat-mdc-header-row {
+  height: min-content !important;
+}

@@ -4,16 +4,22 @@ import { listaProcesoPorEstado } from '../../models/interfaces/estado';
 import { TablaProcesosComponent } from "../tabla-procesos/tabla-procesos.component";
 import { Proceso } from '../../models/classes/proceso';
 import { ProcessStatus } from '../../models/interfaces/proceso';
+import { RecursoService } from '../../services/recurso.service';
+import { IResource } from '../../models/interfaces/resource';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-estados',
   standalone: true,
-  imports: [TablaProcesosComponent],
+  imports: [TablaProcesosComponent, MatTableModule],
   templateUrl: './estados.component.html',
   styleUrl: './estados.component.scss'
 })
 export class EstadosComponent implements OnInit {
   readonly _procesoService = inject(ProcesoService)
+  readonly _recursosService = inject(RecursoService)
+  dataSource = new MatTableDataSource<IResource>(this._recursosService.recursos);
+  displayedColumns: string[] = ['recurso', 'idProceso', 'ocupado'];
   procesosNuevos: Signal<Proceso[]>
   procesosListos: Signal<Proceso[]>
   procesosEjecutando: Signal<Proceso[]>

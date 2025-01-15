@@ -1,26 +1,24 @@
-import { computed, inject, Injectable, Signal } from '@angular/core';
-import { ProcesoService } from './proceso.service';
+import { Injectable } from '@angular/core';
 import { Proceso, ProcessChunk } from '../models/classes/proceso';
-import { IMemoria } from '../models/interfaces/memoria';
+import { generatePastelColor, IMemoria } from '../models/interfaces/memoria';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MemoriaService {
-  columnSize = 100
-  rowSize = 100
+  rowSize = 10
+  columnSize = 10
   espacioMemoria = 10
-  memoria:Array<Array<IMemoria>> =
-  new Array(this.columnSize).fill(new Array(this.rowSize).fill({}))
+  memoria: Array<Array<IMemoria>> = []
   constructor() {
-    for (let i = 0; i < this.columnSize; i++) {
-      for (let j = 0; j < 5; j++) {
-        this.memoria[i][j] = {
-          address: `col${i}-row${j}`,
-          processChunk: undefined
-        }
-      }
+    const defaultProcessChunk: ProcessChunk = {
+      idProceso: 0,
+      chunkIndex: 100,
+      chunkSize: 200,
     }
+    this.memoria = Array.from({ length: this.rowSize }, (_, i) =>
+      Array.from({ length: this.columnSize }, (_, j): IMemoria => ({ address: `row${i}-col${j}`, processChunk: undefined }))
+    );
   }
   verificarMemoriaLlena(): boolean {
     //retorna true si la memoria está llena
@@ -41,7 +39,7 @@ export class MemoriaService {
     }
 
     const posicionesDisponibles = this.getPosicionesDisponibles()
-
+    const color = generatePastelColor()
     chunks.forEach(chunk => {
       const indiceAleatorio = Math.floor(Math.random() * posicionesDisponibles.length)
       const posicionSeleccionada = posicionesDisponibles[indiceAleatorio]
@@ -49,9 +47,22 @@ export class MemoriaService {
       // Colocar el chunk en la posición seleccionada
       const [col, row] = posicionSeleccionada
       this.memoria[col][row].processChunk = chunk
+      this.memoria[col][row].color = color
 
       posicionesDisponibles.splice(indiceAleatorio, 1)
     })
+  }
+  liberarMemoria(idProceso: number | undefined): void {
+    if (idProceso !== undefined) {
+      this.memoria.forEach(row => {
+        row.forEach(col => {
+          if (col.processChunk?.idProceso == idProceso) {
+            col.processChunk = undefined
+            col.color = undefined
+          }
+        })
+      })
+    }
   }
 
   getPosicionesDisponibles(): [number, number][] {
@@ -65,7 +76,6 @@ export class MemoriaService {
         }
       }
     }
-
     return posiciones
   }
 }

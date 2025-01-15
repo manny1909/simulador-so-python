@@ -1,8 +1,7 @@
-import { Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TabsComponent } from "./layouts/tabs/tabs.component";
 import { ProcesoService } from './services/proceso.service';
-import { RecursoService } from './services/recurso.service';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +12,8 @@ import { RecursoService } from './services/recurso.service';
 })
 export class AppComponent implements OnInit{
   readonly _procesoService = inject(ProcesoService)
-  readonly _recursoService = inject(RecursoService)
+  readonly _cdr = inject(ChangeDetectorRef)
   procesos = this._procesoService.procesosNuevos
-  recursos = this._recursoService.recursos
   idIntervaloSimProcesos: any
   constructor() {
 
@@ -28,9 +26,10 @@ export class AppComponent implements OnInit{
     return setInterval(() => {
       this._procesoService.actualizarProcesos()
       // console.log('hola')
-    }, 1000);
+      this._cdr.detectChanges()
+    }, 3000);
   }
   stopProcessSimulation(){
-
+    clearInterval(this.idIntervaloSimProcesos)
   }
 }

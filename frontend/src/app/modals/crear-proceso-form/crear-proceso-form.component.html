@@ -11,7 +11,7 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Tipo de Recurso</mat-label>
-      <mat-select formControlName="processResource">
+      <mat-select formControlName="processResource" multiple>
         <mat-option *ngFor="let type of resourcesList" [value]="type">{{ type }}</mat-option>
       </mat-select>
     </mat-form-field>

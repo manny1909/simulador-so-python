@@ -2,5 +2,14 @@ import { ProcessChunk } from "../classes/proceso";
 
 export interface IMemoria {
   address: string,
-  processChunk: ProcessChunk | undefined
+  processChunk: ProcessChunk | undefined,
+  color?: string
+}
+export function generatePastelColor(): string {
+  const randomChannel = () => Math.floor((Math.random() * 128) + 127); // Genera valores entre 127 y 255
+  const r = randomChannel();
+  const g = randomChannel();
+  const b = randomChannel();
+
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }

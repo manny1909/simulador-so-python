@@ -1,24 +1,32 @@
 import { ProcessResource, ProcessStatus } from "../interfaces/proceso"
+import { IResource } from "../interfaces/resource"
 
 export class Proceso {
   id: number | undefined
   processName: string | undefined
   processSize: number | 0
-  processResource: ProcessResource | undefined
+  processResources: ProcessResource[] | undefined
   estado: ProcessStatus
   pendingSize: number
   contadorProceso: number | undefined
-  constructor(processName: string, processSize: number, processResource: ProcessResource, estado?: ProcessStatus, id?: number) {
+  constructor(processName: string, processSize: number, processResource: ProcessResource[], estado?: ProcessStatus, id?: number) {
     this.id = id
     this.processName = processName
     this.processSize = processSize
-    this.processResource = processResource
+    this.processResources = processResource
     this.estado = estado ?? 'nuevo'
     this.pendingSize = processSize
   }
 
   setEstado(estado: ProcessStatus) {
     this.estado = estado
+  }
+  validarRecursos(recursos: IResource[]): boolean {
+    if (!this.processResources) return true;
+    return this.processResources.every(_recurso => {
+      const recurso = recursos.find(r => r.recurso === _recurso);
+      return recurso && (!recurso.ocupado || recurso.idProceso === this.id);
+    });
   }
   generarChunks(sizeChunk: number): ProcessChunk[] {
     if (sizeChunk <= 0) {
