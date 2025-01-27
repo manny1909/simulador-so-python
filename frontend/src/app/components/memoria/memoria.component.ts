@@ -11,8 +11,6 @@ import { IMemoria } from '../../models/interfaces/memoria';
 })
 export class MemoriaComponent {
   readonly _memoriaService = inject(MemoriaService)
-  memory: IMemoria[][] = []
   constructor(){
-    this.memory = this._memoriaService.memoria
   }
 }

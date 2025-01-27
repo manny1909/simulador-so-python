@@ -20,6 +20,7 @@ export class ProcesoService {
   procesosEjecutando = signal<Proceso[]>(new Array())
   procesosBloqueados = signal<Proceso[]>(new Array())
   procesosTerminados = signal<Proceso[]>(new Array())
+
   procesosNuevos = signal<Proceso[]>([
     new Proceso('Proceso A', 100, ['memory', 'graphicsCard'], 'nuevo', 1),
     new Proceso('Proceso B', 150, ['processor', 'hardDrive'], 'nuevo', 2),
@@ -64,7 +65,7 @@ export class ProcesoService {
       })
       return;
     }
-    listaProceso.update((value) => [...value, newProcess])
+
     this._memoriaService.cargarProcesoEnMemoria(newProcess)
     Swal.fire({
       position: 'bottom',
@@ -74,6 +75,9 @@ export class ProcesoService {
       timer: 2000,
       showConfirmButton: false,
     })
+    if (!this.validarProminencia(newProcess)){
+      listaProceso.update((value) => [...value, newProcess])
+    }
   }
   updateProcessToList(updatedProcess: Proceso, listaProceso: WritableSignal<Array<Proceso>>) {
     listaProceso.update((value) => {
@@ -128,7 +132,9 @@ export class ProcesoService {
     let recursos = this._recursoService.recursos
     if (procesosEjecutando.length > 0) {
       const proceso = procesosEjecutando[0]
-
+      if (proceso.prominencia =='si') {
+        console.log('Se ejecuto el proceso con prominencia')
+      }
       this._procesadorService.ejecutar(proceso)
       proceso.processResources?.forEach(recurso => {
         const liberaRecurso = proceso.estado == 'terminado' ? true : this.getRandomBoolean()
@@ -248,5 +254,39 @@ export class ProcesoService {
     this.procesosBloqueados.update(() => [...procesosBloqueados]);
     this.procesosListos.update(() => [...procesosListos]);
   }
+  validarProminencia(proceso: Proceso): boolean {
+    if (proceso.prominencia === 'si') {
+      const procesosEjecutando = this.procesosEjecutando();
+      const procesosListos = this.procesosListos();
+      const procesoEjecutando = procesosEjecutando[0];
+      const recursos = this._recursoService.recursos
 
+      if (procesoEjecutando) {
+        procesoEjecutando.setEstado('listo');
+
+        procesosListos.push(procesoEjecutando);
+        procesosEjecutando.splice(0, 1);
+
+        this.procesosListos.update(() => [...procesosListos]);
+
+      }
+      proceso.setEstado('ejecutando');
+      procesosEjecutando.push(proceso);
+      proceso.processResources?.forEach(recurso => {
+        const indexRecurso = recursos.findIndex(x => x.recurso == recurso)
+        if (indexRecurso != -1) {
+          recursos[indexRecurso].idProceso = proceso.id
+          recursos[indexRecurso].ocupado = true
+        }
+      })
+      this.procesosEjecutando.update(() => [...procesosEjecutando]);
+      this._recursoService.recursos = recursos
+       return true
+    } else if (proceso.prominencia === 'no') {
+      proceso.setEstado('listo');
+      this.procesosListos.update(listos => [proceso, ...listos]);
+      return true
+    }
+    return false
+  }
 }

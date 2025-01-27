@@ -1,6 +1,6 @@
 <form [formGroup]="formCreate" (ngSubmit)="onSubmit()">
-<h2 mat-dialog-title>Crear proceso</h2>
-<mat-dialog-content>
+  <h2 mat-dialog-title>Crear proceso</h2>
+  <mat-dialog-content>
     <mat-form-field>
       <mat-label>Nombre de Proceso</mat-label>
       <input matInput formControlName="processName">
@@ -15,10 +15,17 @@
         <mat-option *ngFor="let type of resourcesList" [value]="type">{{ type }}</mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-form-field>
+      <mat-label>Prominencia</mat-label>
+      <mat-select formControlName="prominencia">
+        <mat-option *ngFor="let type of prominenciaList" [value]="type">
+          {{ type=='si'?'Con prominencia':type=='no'?'Sin prominencia':'normal' }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-button (submit)="formCreate">Guardar</button>
     <button mat-button mat-dialog-close>Close</button>
   </mat-dialog-actions>
 </form>
-

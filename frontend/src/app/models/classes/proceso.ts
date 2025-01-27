@@ -1,3 +1,4 @@
+import { Prominencia } from './../interfaces/proceso';
 import { ProcessResource, ProcessStatus } from "../interfaces/proceso"
 import { IResource } from "../interfaces/resource"
 
@@ -6,16 +7,18 @@ export class Proceso {
   processName: string | undefined
   processSize: number | 0
   processResources: ProcessResource[] | undefined
+  prominencia: Prominencia
   estado: ProcessStatus
   pendingSize: number
   contadorProceso: number | undefined
-  constructor(processName: string, processSize: number, processResource: ProcessResource[], estado?: ProcessStatus, id?: number) {
+  constructor(processName: string, processSize: number, processResource: ProcessResource[], estado?: ProcessStatus, id?: number, prominencia: Prominencia = undefined) {
     this.id = id
     this.processName = processName
     this.processSize = processSize
     this.processResources = processResource
     this.estado = estado ?? 'nuevo'
     this.pendingSize = processSize
+    this.prominencia = prominencia
   }
 
   setEstado(estado: ProcessStatus) {

@@ -39,6 +39,12 @@
   padding: 10px;
   line-height: normal;
 }
+.custom-table .mat-column-prominence {
+  font-size: 9px;
+  width: 10px; /* Ajusta el ancho de la columna 'Estado' */
+  padding: 10px;
+  line-height: normal;
+}
 .mat-mdc-row, .mat-mdc-header-row {
   height: min-content !important;
 }

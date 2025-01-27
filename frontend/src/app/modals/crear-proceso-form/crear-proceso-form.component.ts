@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule,  } from '@angular/material/dialog';
-import { ProcessForm, ProcessResource } from '../../models/interfaces/proceso';
+import { ProcessForm, ProcessResource, Prominencia } from '../../models/interfaces/proceso';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
@@ -24,12 +24,14 @@ export class CrearProcesoFormComponent implements OnInit {
   proceso = signal<ProcessForm | undefined>(undefined)
   readonly _fb = inject(FormBuilder)
   resourcesList: Array<ProcessResource> = ['memory', 'graphicsCard', 'processor', 'hardDrive']
+  prominenciaList: Array<Prominencia> = ['si', 'no', undefined]
   buildFormCreate() {
     return this._fb.group(
       {
         processName: ['Nuevo proceso', [ Validators.required]],
         processSize: [1, [ Validators.required, Validators.min(1)]],
         processResource: [undefined, [ Validators.required]],
+        prominencia: [undefined, [ Validators.required]],
       },
       {}
     )
@@ -48,12 +50,15 @@ export class CrearProcesoFormComponent implements OnInit {
       return
     }
     const _processForm: ProcessForm =  this.formCreate.value
-    const {processName, processResource, processSize} = _processForm
-    const newProcess: Proceso = new Proceso(processName, processSize, processResource)
+    const {processName, processResource, processSize, prominencia} = _processForm
+    const newProcess: Proceso = new Proceso(processName, processSize, processResource, undefined, undefined, prominencia)
     if (!newProcess) {
       console.error('newProcess is undefined')
     }
     this._procesoService.addProcesoToList(newProcess, this._procesoService.procesosNuevos)
+    setTimeout(() => {
+      console.log('first timeout')
+    }, 15000);
   }
   ngOnInit(): void {
   }

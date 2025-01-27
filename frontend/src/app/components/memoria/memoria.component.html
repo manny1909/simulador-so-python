@@ -1,30 +1,66 @@
-<div class="grid-container">
-  @for (row of this._memoriaService.memoria; track $index) {
-    <div class="grid-row">
-      @for (celda of row; track $index) {
+<div class="big-container-memoria">
+  <div class="grid-memoria-principal">
+    <div class="my-2 text-2xl text-center">Memoria principal</div>
+    <div class="grid-container">
+      @for (row of this._memoriaService.memoria; track $index) {
+      <div class="grid-row">
+        @for (celda of row; track $index) {
         <div class="grid-cell" [style]="{'background-color': celda.color}">
           <small>
             {{celda.address}}
           </small>
           <span>
             @if (!celda.processChunk) {
-              disponible
+            disponible
             }
             @else {
-              <div> IdProc: {{celda.processChunk.idProceso}}</div>
-              <small style="line-height: 1;">
-                <div>
-                  index: {{celda.processChunk.chunkIndex}}
-                </div>
-                <div>
-                  size: {{celda.processChunk.chunkSize}}
-                </div>
-              </small>
+            <div> IdProc: {{celda.processChunk.idProceso}}</div>
+            <small style="line-height: 1;">
+              <div>
+                index: {{celda.processChunk.chunkIndex}}
+              </div>
+              <div>
+                size: {{celda.processChunk.chunkSize}}
+              </div>
+            </small>
             }
           </span>
         </div>
+        }
+      </div>
       }
     </div>
-  }
+  </div>
+  <div class="grid-memoria-secundaria">
+    <div class="my-2 text-2xl text-center">Memoria Secundaria</div>
+    <div class="grid-container">
+      @for (row of this._memoriaService.memoriaSecundaria; track $index) {
+      <div class="grid-row">
+        @for (celda of row; track $index) {
+        <div class="grid-cell" [style]="{'background-color': celda.color}">
+          <small>
+            {{celda.address}}
+          </small>
+          <span>
+            @if (!celda.processChunk) {
+            disponible
+            }
+            @else {
+            <div> IdProc: {{celda.processChunk.idProceso}}</div>
+            <small style="line-height: 1;">
+              <div>
+                index: {{celda.processChunk.chunkIndex}}
+              </div>
+              <div>
+                size: {{celda.processChunk.chunkSize}}
+              </div>
+            </small>
+            }
+          </span>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
 </div>
-
