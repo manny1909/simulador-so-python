@@ -1,0 +1,6 @@
+python -m venv venv
+cd .\venv\Scripts\
+activate
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+pip install
+python ./src/run.py
