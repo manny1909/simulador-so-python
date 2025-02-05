@@ -16,10 +16,10 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field>
-      <mat-label>Prominencia</mat-label>
-      <mat-select formControlName="prominencia">
-        <mat-option *ngFor="let type of prominenciaList" [value]="type">
-          {{ type=='si'?'Con prominencia':type=='no'?'Sin prominencia':'normal' }}
+      <mat-label>Preeminencia</mat-label>
+      <mat-select formControlName="preeminence">
+        <mat-option *ngFor="let type of preeminenciaList" [value]="type">
+          {{ type=='si'?'Con preeminencia':type=='no'?'Sin preeminencia':'normal' }}
         </mat-option>
       </mat-select>
     </mat-form-field>

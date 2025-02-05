@@ -2,8 +2,9 @@ export type ProcessResource =
   'memory' |
   'processor' |
   'graphicsCard' |
+  'micrófono' |
   'hardDrive';
-export type Prominencia =
+export type Preeminencia =
   'si' |
   'no' |
   undefined;
@@ -18,5 +19,5 @@ export interface ProcessForm {
   processName: string;
   processSize: number;
   processResource: ProcessResource[];
-  prominencia: Prominencia;
+  preeminence: Preeminencia;
 }

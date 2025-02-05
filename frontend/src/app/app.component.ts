@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TabsComponent } from "./layouts/tabs/tabs.component";
 import { ProcesoService } from './services/proceso.service';
+import { ProcesadorService } from './services/procesador.service';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { ProcesoService } from './services/proceso.service';
 })
 export class AppComponent implements OnInit{
   readonly _procesoService = inject(ProcesoService)
+  readonly _procesadorService = inject(ProcesadorService)
   readonly _cdr = inject(ChangeDetectorRef)
   procesos = this._procesoService.procesosNuevos
   idIntervaloSimProcesos: any
@@ -19,17 +21,18 @@ export class AppComponent implements OnInit{
 
   }
   ngOnInit(): void {
-    this.idIntervaloSimProcesos = this.startProcessesSimulation()
-    // this._procesoService.actualizarProcesos()
+    this._procesoService.test()
+    // this.idIntervaloSimProcesos = this.startProcessesSimulation()
   }
   startProcessesSimulation(): number{
-    return setInterval(() => {
-      this._procesoService.actualizarProcesos()
+    return setInterval(async () => {
+      await this._procesoService.actualizarProcesos()
       // console.log('hola')
-      this._cdr.detectChanges()
-    }, 3000);
+      // this._cdr.detectChanges()
+    }, 4000*(this._procesadorService.numProcesadores??1));
   }
   stopProcessSimulation(){
     clearInterval(this.idIntervaloSimProcesos)
+    this._procesoService.resetProcess()
   }
 }

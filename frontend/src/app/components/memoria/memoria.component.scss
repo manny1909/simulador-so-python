@@ -36,6 +36,9 @@
       font-size: 9px;
       padding: 1px;
       aspect-ratio: 1;
+      &.ejecutado{
+        opacity: .5;
+      }
     }
   }
 }

@@ -1,13 +1,14 @@
 import { Component, inject, OnInit, signal, } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule,  } from '@angular/material/dialog';
-import { ProcessForm, ProcessResource, Prominencia } from '../../models/interfaces/proceso';
+import { MatDialogModule, } from '@angular/material/dialog';
+import { ProcessForm, ProcessResource, Preeminencia } from '../../models/interfaces/proceso';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { ProcesoService } from '../../services/proceso.service';
 import { Proceso } from '../../models/classes/proceso';
+import { randomInt } from '../../util/iutil';
 
 @Component({
   selector: 'app-crear-proceso-form',
@@ -23,15 +24,15 @@ export class CrearProcesoFormComponent implements OnInit {
   formCreate: FormGroup;
   proceso = signal<ProcessForm | undefined>(undefined)
   readonly _fb = inject(FormBuilder)
-  resourcesList: Array<ProcessResource> = ['memory', 'graphicsCard', 'processor', 'hardDrive']
-  prominenciaList: Array<Prominencia> = ['si', 'no', undefined]
+  resourcesList: Array<ProcessResource> = ['memory', 'graphicsCard', 'processor', 'hardDrive', 'micrófono']
+  preeminenciaList: Array<Preeminencia> = ['si', 'no', undefined]
   buildFormCreate() {
     return this._fb.group(
       {
-        processName: ['Nuevo proceso', [ Validators.required]],
-        processSize: [1, [ Validators.required, Validators.min(1)]],
-        processResource: [undefined, [ Validators.required]],
-        prominencia: [undefined, [ Validators.required]],
+        processName: ['Proceso A', [Validators.required]],
+        processSize: [1, [Validators.required, Validators.min(1)]],
+        processResource: [undefined, [Validators.required]],
+        preeminence: [undefined, []],
       },
       {}
     )
@@ -44,21 +45,30 @@ export class CrearProcesoFormComponent implements OnInit {
   updateProceso() {
     this.proceso.update((value) => value)
   }
-  onSubmit(){
+  onSubmit() {
     if (this.formCreate.invalid) {
       console.warn('form invalid');
       return
     }
-    const _processForm: ProcessForm =  this.formCreate.value
-    const {processName, processResource, processSize, prominencia} = _processForm
-    const newProcess: Proceso = new Proceso(processName, processSize, processResource, undefined, undefined, prominencia)
+    const _processForm: ProcessForm = this.formCreate.value
+    const { processName, processResource, processSize, preeminence: preeminencia } = _processForm
+    const idProceso = this.getRandom()
+    const newProcess: Proceso = new Proceso(processName, processSize, processResource, 'nuevo', idProceso, preeminencia)
+    const todosLosProcesos = this._procesoService.todosLosProcesos()
     if (!newProcess) {
       console.error('newProcess is undefined')
+      return
     }
-    this._procesoService.addProcesoToList(newProcess, this._procesoService.procesosNuevos)
-    setTimeout(() => {
-      console.log('first timeout')
-    }, 15000);
+    if (todosLosProcesos.some(x => x.processName === newProcess.processName)) {
+      console.error('el nombre del nuevo proceso ya existe')
+      return
+    }
+    this._procesoService.agregarProcesoANuevos(newProcess, true)
+  }
+  getRandom(): number {
+    const idRandom = randomInt()
+    const i = this._procesoService.todosLosProcesos().findIndex(x => x.id == idRandom)
+    return i != -1 ? this.getRandom() : idRandom
   }
   ngOnInit(): void {
   }

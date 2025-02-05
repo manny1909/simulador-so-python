@@ -5,17 +5,21 @@
       @for (row of this._memoriaService.memoria; track $index) {
       <div class="grid-row">
         @for (celda of row; track $index) {
-        <div class="grid-cell" [style]="{'background-color': celda.color}">
+        <div class="grid-cell" [style]="{'background-color': celda?.color ?? 'white'}"
+          [ngClass]="{'ejecutado': celda?.processChunk?.ejecutado}">
           <small>
-            {{celda.address}}
+            {{celda?.address}}
           </small>
           <span>
-            @if (!celda.processChunk) {
+            @if (!celda || !celda.processChunk || !celda.processChunk.idProceso) {
             disponible
             }
             @else {
-            <div> IdProc: {{celda.processChunk.idProceso}}</div>
             <small style="line-height: 1;">
+              <div> IdProceso: {{celda.processChunk.idProceso}}</div>
+              @if (celda.processChunk.idHilo !== undefined) {
+                <div>Hilo {{celda.processChunk.idHilo}}</div>
+              }
               <div>
                 index: {{celda.processChunk.chunkIndex}}
               </div>
@@ -37,17 +41,21 @@
       @for (row of this._memoriaService.memoriaSecundaria; track $index) {
       <div class="grid-row">
         @for (celda of row; track $index) {
-        <div class="grid-cell" [style]="{'background-color': celda.color}">
+        <div class="grid-cell" [style]="{'background-color': celda?.color ?? 'white'}"
+          [ngClass]="{'ejecutado': celda?.processChunk?.ejecutado}">
           <small>
-            {{celda.address}}
+            {{celda?.address}}
           </small>
           <span>
-            @if (!celda.processChunk) {
+            @if (!celda || !celda.processChunk || !celda.processChunk.idProceso) {
             disponible
             }
             @else {
-            <div> IdProc: {{celda.processChunk.idProceso}}</div>
             <small style="line-height: 1;">
+              <div> IdProceso: {{celda.processChunk.idProceso}}</div>
+              @if (celda.processChunk.idHilo !== undefined) {
+                <div>Hilo {{celda.processChunk.idHilo}}</div>
+              }
               <div>
                 index: {{celda.processChunk.chunkIndex}}
               </div>

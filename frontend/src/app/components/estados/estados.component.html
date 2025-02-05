@@ -1,27 +1,29 @@
-
+<button mat-button (click)="ejec()">ejecutar</button>
+<button mat-button (click)="startProcessesSimulation()">ejecutar intervalo</button>
+<button mat-button (click)="stopProcessSimulation()">Reiniciar simulador</button>
 <div class="grid grid-cols-3 grid-procesos gap-4 p-2">
   <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-nuevo">
     <h5 class="text-center card-header"> <strong>Procesos Nuevos</strong></h5>
-    <app-tabla-procesos [procesos]="procesosNuevos"></app-tabla-procesos>
+    <app-tabla-procesos [procesos]="_procesoService.procesosNuevos"></app-tabla-procesos>
   </div>
 
   <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-listo">
     <h5 class="text-center card-header"> <strong>Procesos Listos</strong></h5>
-    <app-tabla-procesos [procesos]="procesosListos"></app-tabla-procesos>
+    <app-tabla-procesos [procesos]="_procesoService.procesosListos"></app-tabla-procesos>
   </div>
 
   <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-ejecutando">
     <h5 class="text-center card-header"> <strong>Procesos Ejecutando</strong></h5>
-    <app-tabla-procesos [procesos]="procesosEjecutando"></app-tabla-procesos>
+    <app-tabla-procesos [procesos]="_procesoService.procesosEjecutando"></app-tabla-procesos>
   </div>
 
   <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-bloqueado">
     <h5 class="text-center card-header"> <strong>Procesos Bloqueados</strong></h5>
-    <app-tabla-procesos [procesos]="procesosBloqueados"></app-tabla-procesos>
+    <app-tabla-procesos [procesos]="_procesoService.procesosBloqueados"></app-tabla-procesos>
   </div>
   <div class="card p-3 bg-sky-200 h-56 overflow-auto grid-area-terminado">
     <h5 class="text-center card-header"> <strong>Procesos Terminados</strong></h5>
-    <app-tabla-procesos [procesos]="procesosTerminados"></app-tabla-procesos>
+    <app-tabla-procesos [procesos]="_procesoService.procesosTerminados"></app-tabla-procesos>
   </div>
   <div class="card p-3 bg-green-200 h-56 overflow-auto grid-area-recursos">
     <h5 class="text-center card-header"> <strong>Recursos</strong></h5>

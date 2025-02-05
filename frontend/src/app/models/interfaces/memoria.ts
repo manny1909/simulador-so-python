@@ -2,7 +2,7 @@ import { ProcessChunk } from "../classes/proceso";
 
 export interface IMemoria {
   address: string,
-  processChunk: ProcessChunk | undefined,
+  processChunk: ProcessChunk,
   color?: string
 }
 export function generatePastelColor(): string {
