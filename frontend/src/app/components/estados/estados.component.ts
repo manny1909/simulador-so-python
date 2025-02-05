@@ -42,6 +42,6 @@ export class EstadosComponent implements OnInit {
   }
   stopProcessSimulation(){
     clearInterval(this.idIntervaloSimProcesos)
-    // this._procesoService.resetProcess()
+    this._procesoService.resetProcess()
   }
 }

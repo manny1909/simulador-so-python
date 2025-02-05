@@ -1,24 +1,32 @@
 .grid-procesos{
+  height: 90vh;
+  grid-template-rows: 1fr 1fr;
   grid-template-areas: "nuevo listo ejecutando"
   "recursos bloqueado terminado";
 }
 
 .grid-area-nuevo{
+  height: 100%;
   grid-area: nuevo;
 }
 .grid-area-listo{
+  height: 100%;
   grid-area: listo;
 }
 .grid-area-ejecutando{
+  height: 100%;
   grid-area: ejecutando;
 }
 .grid-area-bloqueado{
+  height: 100%;
   grid-area: bloqueado;
 }
 .grid-area-terminado{
+  height: 100%;
   grid-area: terminado;
 }
 .grid-area-recursos{
+  height: 100%;
   grid-area: recursos;
 }
 
